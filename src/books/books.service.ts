@@ -12,8 +12,36 @@ export interface Books {
 export class BooksService {
   private books: Books[] = [];
 
-  getAllBook(): Books[] {
-    return this.books;
+  getBooks(
+    title?: string,
+    author?: string,
+    category?: string,
+    search?: string,
+  ): Books[] {
+    const books = this.books.filter((book) => {
+      if (search) {
+        return (
+          book.title.toLowerCase().includes(search.toLowerCase()) ||
+          book.author.toLowerCase().includes(search.toLowerCase()) ||
+          book.category.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+
+      if (title) {
+        return book.title.toLowerCase().includes(title.toLowerCase());
+      }
+
+      if (author) {
+        return book.author.toLowerCase().includes(author.toLowerCase());
+      }
+
+      if (category) {
+        return book.category.toLowerCase().includes(category.toLowerCase());
+      }
+
+      return true;
+    });
+    return books;
   }
 
   getBookById(id: string) {

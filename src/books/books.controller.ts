@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 
@@ -14,8 +15,13 @@ export class BooksController {
   constructor(private booksService: BooksService) {}
 
   @Get()
-  getAllBooks() {
-    return this.booksService.getAllBook();
+  getBooks(
+    @Query('title') title: string,
+    @Query('author') author: string,
+    @Query('category') category: string,
+    @Query('search') search: string,
+  ) {
+    return this.booksService.getBooks(title, author, category, search);
   }
 
   @Get('/:id')
