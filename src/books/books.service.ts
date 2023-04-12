@@ -1,11 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 export interface Books {
   id: string;
   title: string;
   author: string;
   category: string;
+  year: number;
 }
 
 @Injectable()
@@ -50,19 +53,28 @@ export class BooksService {
     return this.books[idx];
   }
 
-  createBook(title: string, author: string, category: string) {
-    this.books.push({ id: uuidv4(), title, author, category });
-    return { id: uuidv4(), title, author, category };
+  createBook(createBookDto: CreateBookDto) {
+    const { title, author, category, year } = createBookDto;
+    this.books.push({
+      id: uuidv4(),
+      title,
+      author,
+      category,
+      year: Number(year),
+    });
+    return { id: uuidv4(), title, author, category, year: Number(year) };
   }
 
-  updateBook(id: string, title: string, author: string, category: string) {
+  updateBook(id: string, updateBookDto: UpdateBookDto) {
+    const { title, author, category, year } = updateBookDto;
     const idx = this.findBookById(id);
 
     this.books[idx].title = title;
     this.books[idx].author = author;
     this.books[idx].category = category;
+    this.books[idx].year = Number(year);
 
-    return { id, title, author, category };
+    return { id, title, author, category, year: Number(year) };
   }
 
   deleteBook(id: string) {
