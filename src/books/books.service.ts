@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateBookDto } from './dto/create-book.dto';
+import { FilterBookDto } from './dto/filter-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 
 export interface Books {
@@ -15,35 +16,41 @@ export interface Books {
 export class BooksService {
   private books: Books[] = [];
 
-  getBooks(
-    title?: string,
-    author?: string,
-    category?: string,
-    search?: string,
-  ): Books[] {
-    const books = this.books.filter((book) => {
-      if (search) {
-        return (
-          book.title.toLowerCase().includes(search.toLowerCase()) ||
-          book.author.toLowerCase().includes(search.toLowerCase()) ||
-          book.category.toLowerCase().includes(search.toLowerCase())
-        );
-      }
+  getBooks(filterBookDto: FilterBookDto): Books[] {
+    const { search, title, author, category, min_year, max_year } =
+      filterBookDto;
 
-      if (title) {
-        return book.title.toLowerCase().includes(title.toLowerCase());
-      }
+    const books = this.books
+      .filter((book) => {
+        if (min_year && max_year) {
+          return min_year <= book.year && max_year >= book.year;
+        }
 
-      if (author) {
-        return book.author.toLowerCase().includes(author.toLowerCase());
-      }
+        if (title) {
+          return book.title.toLowerCase().includes(title.toLowerCase());
+        }
 
-      if (category) {
-        return book.category.toLowerCase().includes(category.toLowerCase());
-      }
+        if (author) {
+          return book.author.toLowerCase().includes(author.toLowerCase());
+        }
 
-      return true;
-    });
+        if (category) {
+          return book.category.toLowerCase().includes(category.toLowerCase());
+        }
+
+        return true;
+      })
+      .filter((item) => {
+        if (search) {
+          return (
+            item.title.toLowerCase().includes(search.toLowerCase()) ||
+            item.author.toLowerCase().includes(search.toLowerCase()) ||
+            item.category.toLowerCase().includes(search.toLowerCase())
+          );
+        }
+
+        return true;
+      });
     return books;
   }
 
@@ -60,9 +67,9 @@ export class BooksService {
       title,
       author,
       category,
-      year: Number(year),
+      year,
     });
-    return { id: uuidv4(), title, author, category, year: Number(year) };
+    return { id: uuidv4(), title, author, category, year };
   }
 
   updateBook(id: string, updateBookDto: UpdateBookDto) {
@@ -72,9 +79,9 @@ export class BooksService {
     this.books[idx].title = title;
     this.books[idx].author = author;
     this.books[idx].category = category;
-    this.books[idx].year = Number(year);
+    this.books[idx].year = year;
 
-    return { id, title, author, category, year: Number(year) };
+    return { id, title, author, category, year };
   }
 
   deleteBook(id: string) {
