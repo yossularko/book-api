@@ -17,7 +17,7 @@ import { Book } from './entity/book.entity';
 
 @Controller('books')
 export class BooksController {
-  constructor(private booksService: BooksService) {}
+  constructor(private readonly booksService: BooksService) {}
 
   @Get()
   async getBooks(@Query() filter: FilterBookDto): Promise<Book[]> {
