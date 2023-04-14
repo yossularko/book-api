@@ -4,10 +4,17 @@ import { jwtConfig } from 'src/config/jwt.config';
 import { UsersModule } from 'src/users/users.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { RefreshToken } from './entity/refresh-token.entity';
+import { RefreshTokenRepository } from './repository/refresh-token.repository';
 
 @Module({
-  imports: [JwtModule.register(jwtConfig), UsersModule],
-  providers: [AuthService],
+  imports: [
+    JwtModule.register(jwtConfig),
+    TypeOrmModule.forFeature([RefreshToken]),
+    UsersModule,
+  ],
+  providers: [AuthService, RefreshTokenRepository],
   controllers: [AuthController],
 })
 export class AuthModule {}
