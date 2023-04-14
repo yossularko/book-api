@@ -1,4 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { JwtGuard } from 'src/guard/jwt.guard';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
@@ -19,5 +27,11 @@ export class AuthController {
     @Body() refreshAccessTokenDto: RefreshAccessTokenDto,
   ): Promise<RefreshTokenRes> {
     return this.authService.refreshAccessToken(refreshAccessTokenDto);
+  }
+
+  @Patch('/:id/revoke')
+  @UseGuards(JwtGuard)
+  async revokeRefreshToken(@Param('id') id: string): Promise<void> {
+    return this.authService.revokeRefreshToken(id);
   }
 }
