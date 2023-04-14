@@ -26,35 +26,42 @@ export class BooksController {
 
   @Get()
   async getBooks(
-    @Query() filter: FilterBookDto,
     @GetUser() user: User,
+    @Query() filter: FilterBookDto,
   ): Promise<Book[]> {
-    console.log('req get all book: ', user);
-    return await this.booksService.getBooks(filter);
+    return await this.booksService.getBooks(user, filter);
   }
 
   @Get('/:id')
   async getBookById(
+    @GetUser() user: User,
     @Param('id', UUIDValidationPipe) id: string,
   ): Promise<Book> {
-    return await this.booksService.getBookById(id);
+    return await this.booksService.getBookById(user, id);
   }
 
   @Post()
-  async createBook(@Body() payload: CreateBookDto): Promise<void> {
-    return await this.booksService.createBook(payload);
+  async createBook(
+    @GetUser() user: User,
+    @Body() payload: CreateBookDto,
+  ): Promise<void> {
+    return await this.booksService.createBook(user, payload);
   }
 
   @Put('/:id')
   async updateBook(
+    @GetUser() user: User,
     @Param('id', UUIDValidationPipe) id: string,
     @Body() payload: UpdateBookDto,
   ): Promise<void> {
-    return await this.booksService.updateBook(id, payload);
+    return await this.booksService.updateBook(user, id, payload);
   }
 
   @Delete('/:id')
-  async deleteBook(@Param('id', UUIDValidationPipe) id: string): Promise<void> {
-    return await this.booksService.deleteBook(id);
+  async deleteBook(
+    @GetUser() user: User,
+    @Param('id', UUIDValidationPipe) id: string,
+  ): Promise<void> {
+    return await this.booksService.deleteBook(user, id);
   }
 }
