@@ -15,7 +15,7 @@ export class RefreshTokenRepository extends Repository<RefreshToken> {
     refreshToken.isRevoked = false;
 
     const expiredAt = new Date();
-    expiredAt.setDate(expiredAt.getDate() + ttl);
+    expiredAt.setTime(expiredAt.getTime() + ttl);
     refreshToken.expiredAt = expiredAt;
 
     return await refreshToken.save();
