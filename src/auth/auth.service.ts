@@ -14,6 +14,7 @@ import { LoginRes } from './interface/login-res.interface';
 import { RefreshTokenRes } from './interface/refresh-token-res.interface';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { TokenExpiredError } from 'jsonwebtoken';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,7 @@ export class AuthService {
     private readonly refereshTokenRepository: RefreshTokenRepository,
   ) {}
 
-  async login(loginDto: LoginDto): Promise<LoginRes> {
+  async login(loginDto: LoginDto, response: Response): Promise<LoginRes> {
     const { email, password } = loginDto;
 
     const user = await this.usersService.validateUser(email, password);
@@ -35,7 +36,13 @@ export class AuthService {
     const access_token = await this.createAccessToken(user);
     const refresh_token = await this.createRefreshToken(user);
 
-    return { access_token, refresh_token };
+    response.cookie('jwt_auth', access_token, {
+      expires: new Date(new Date().getTime() + 3600 * 1000),
+      httpOnly: true,
+      sameSite: 'strict',
+    });
+
+    return { refresh_token };
   }
 
   async refreshAccessToken(

@@ -4,8 +4,10 @@ import {
   Param,
   Patch,
   Post,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { JwtGuard } from 'src/guard/jwt.guard';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -18,8 +20,11 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto): Promise<LoginRes> {
-    return this.authService.login(loginDto);
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<LoginRes> {
+    return this.authService.login(loginDto, response);
   }
 
   @Post('refresh-token')
