@@ -134,7 +134,7 @@ export class AuthService {
       httpOnly: true,
       sameSite: 'lax',
       secure: false,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 3600 * 1000,
       path: '/',
     };
 
