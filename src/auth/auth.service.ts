@@ -14,7 +14,7 @@ import { LoginRes } from './interface/login-res.interface';
 import { RefreshTokenRes } from './interface/refresh-token-res.interface';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { TokenExpiredError } from 'jsonwebtoken';
-import { Response } from 'express';
+import { CookieOptions, Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -44,28 +44,15 @@ export class AuthService {
       return { access_token, refresh_token };
     }
 
-    // buat local
-    response.cookie('jwt_auth', access_token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      path: '/',
-    });
-
-    // buat hosting
-    // response.cookie('jwt_auth', access_token, {
-    //   expires: new Date(new Date().getTime() + 3600 * 1000),
-    //   httpOnly: true,
-    //   sameSite: 'strict',
-    //   secure: true,
-    // });
+    response.cookie('jwt_auth', access_token, this.configCookie(true));
 
     return { access_token: '', refresh_token };
   }
 
   async refreshAccessToken(
     refreshAccessTokenDto: RefreshAccessTokenDto,
+    isMobile: string,
+    response: Response,
   ): Promise<RefreshTokenRes> {
     const { refresh_token } = refreshAccessTokenDto;
     const payload = await this.decodeToken(refresh_token);
@@ -83,6 +70,12 @@ export class AuthService {
     }
 
     const access_token = await this.createAccessToken(refreshToken.user);
+
+    if (isMobile === 'true') {
+      return { access_token };
+    }
+
+    response.cookie('jwt_auth', access_token, this.configCookie(true));
 
     return { access_token };
   }
@@ -134,5 +127,24 @@ export class AuthService {
 
     refreshToken.isRevoked = true;
     await refreshToken.save();
+  }
+
+  configCookie(isLocal?: boolean): CookieOptions {
+    const localConfig: CookieOptions = {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      path: '/',
+    };
+
+    const onlineConfig: CookieOptions = {
+      expires: new Date(new Date().getTime() + 3600 * 1000),
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: true,
+    };
+
+    return isLocal ? localConfig : onlineConfig;
   }
 }

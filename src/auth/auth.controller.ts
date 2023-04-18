@@ -36,8 +36,15 @@ export class AuthController {
   @Post('refresh-token')
   async refreshToken(
     @Body() refreshAccessTokenDto: RefreshAccessTokenDto,
+    @Query() params: LoginQueryDto,
+    @Res({ passthrough: true }) response: Response,
   ): Promise<RefreshTokenRes> {
-    return this.authService.refreshAccessToken(refreshAccessTokenDto);
+    const { isMobile } = params;
+    return this.authService.refreshAccessToken(
+      refreshAccessTokenDto,
+      isMobile,
+      response,
+    );
   }
 
   @Patch('/:id/revoke')
