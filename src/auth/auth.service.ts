@@ -44,11 +44,22 @@ export class AuthService {
       return { access_token, refresh_token };
     }
 
+    // buat local
     response.cookie('jwt_auth', access_token, {
-      expires: new Date(new Date().getTime() + 3600 * 1000),
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: 'lax',
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      path: '/',
     });
+
+    // buat hosting
+    // response.cookie('jwt_auth', access_token, {
+    //   expires: new Date(new Date().getTime() + 3600 * 1000),
+    //   httpOnly: true,
+    //   sameSite: 'strict',
+    //   secure: true,
+    // });
 
     return { access_token: '', refresh_token };
   }
