@@ -4,6 +4,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -22,9 +23,10 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() loginDto: LoginDto,
+    @Query('isMobile') isMobile: string,
     @Res({ passthrough: true }) response: Response,
   ): Promise<LoginRes> {
-    return this.authService.login(loginDto, response);
+    return this.authService.login(loginDto, isMobile, response);
   }
 
   @Post('refresh-token')

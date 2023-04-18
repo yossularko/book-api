@@ -24,7 +24,11 @@ export class AuthService {
     private readonly refereshTokenRepository: RefreshTokenRepository,
   ) {}
 
-  async login(loginDto: LoginDto, response: Response): Promise<LoginRes> {
+  async login(
+    loginDto: LoginDto,
+    isMobile: string,
+    response: Response,
+  ): Promise<LoginRes> {
     const { email, password } = loginDto;
 
     const user = await this.usersService.validateUser(email, password);
@@ -36,13 +40,17 @@ export class AuthService {
     const access_token = await this.createAccessToken(user);
     const refresh_token = await this.createRefreshToken(user);
 
+    if (isMobile === 'true') {
+      return { access_token, refresh_token };
+    }
+
     response.cookie('jwt_auth', access_token, {
       expires: new Date(new Date().getTime() + 3600 * 1000),
       httpOnly: true,
       sameSite: 'strict',
     });
 
-    return { refresh_token };
+    return { access_token: '', refresh_token };
   }
 
   async refreshAccessToken(
