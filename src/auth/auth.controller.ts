@@ -8,14 +8,17 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtGuard } from 'src/guard/jwt.guard';
 import { AuthService } from './auth.service';
+import { LoginQueryDto } from './dto/login-query.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { LoginRes } from './interface/login-res.interface';
 import { RefreshTokenRes } from './interface/refresh-token-res.interface';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -23,9 +26,10 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() loginDto: LoginDto,
-    @Query('isMobile') isMobile: string,
+    @Query() params: LoginQueryDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<LoginRes> {
+    const { isMobile } = params;
     return this.authService.login(loginDto, isMobile, response);
   }
 

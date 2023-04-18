@@ -9,21 +9,28 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { JwtGuard } from 'src/guard/jwt.guard';
 import { UUIDValidationPipe } from 'src/pipes/uuid-validation.pipe';
 import { User } from 'src/users/entity/user.entity';
 import { BooksService } from './books.service';
+import { BookDto } from './dto/book.dto';
 import { CreateBookDto } from './dto/create-book.dto';
 import { FilterBookDto } from './dto/filter-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Book } from './entity/book.entity';
 
+@ApiTags('Book')
 @Controller('books')
 @UseGuards(JwtGuard)
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
+  @ApiOkResponse({
+    isArray: true,
+    type: BookDto,
+  })
   @Get()
   async getBooks(
     @GetUser() user: User,
@@ -32,6 +39,9 @@ export class BooksController {
     return await this.booksService.getBooks(user, filter);
   }
 
+  @ApiOkResponse({
+    type: BookDto,
+  })
   @Get('/:id')
   async getBookById(
     @GetUser() user: User,

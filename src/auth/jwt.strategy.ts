@@ -40,7 +40,7 @@ export class JwtStartegy extends PassportStrategy(Strategy) {
           return null;
         },
       ]),
-      ignoreExpiration: true, // production must be false
+      ignoreExpiration: false, // production must be false
       secretOrKey: jwtConfig.secret,
     });
   }
