@@ -11,22 +11,22 @@ export class JwtStartegy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request) => {
           // default find cookie ===================================
-          // if (request && request.cookies) {
-          //   return request.cookies['jwt_auth'];
-          // }
-
-          // find cookie from postman ==============================
-          if (request && request.headers.cookie) {
-            const jwtCookie = request.headers.cookie;
-            const splited = jwtCookie.split(';');
-            const idx = splited.findIndex((item) => item.includes('jwt_auth'));
-            if (idx !== -1) {
-              const finded = splited[idx];
-              const nameVal = finded.indexOf('=');
-              const finalCookie = finded.substring(nameVal + 1, finded.length);
-              return finalCookie;
-            }
+          if (request && request.cookies) {
+            return request.cookies['jwt_auth'];
           }
+
+          // find cookie without cookie-parser ==============================
+          // if (request && request.headers.cookie) {
+          //   const jwtCookie = request.headers.cookie;
+          //   const splited = jwtCookie.split(';');
+          //   const idx = splited.findIndex((item) => item.includes('jwt_auth'));
+          //   if (idx !== -1) {
+          //     const finded = splited[idx];
+          //     const nameVal = finded.indexOf('=');
+          //     const finalCookie = finded.substring(nameVal + 1, finded.length);
+          //     return finalCookie;
+          //   }
+          // }
 
           // check bearer
           if (request && request.headers.authorization) {
